@@ -79,14 +79,32 @@ btnAvisoFechar.addEventListener('click', () => {
 });
 
 function marcarRowEditando(row){ row && row.classList.add("edit-row");}
+
 function desmarcarRowEditando(row){ row && row.classList.remove("edit-row");}
 
 function editarProduto(id, event) {
     let rowEditando = event.closest("tr");
+    if (contemProdutoEmEdicao(rowEditando)) {
+        alert("Finalize a edição atual antes de editar outro produto.");
+        return;
+    }
+    
     marcarRowEditando(rowEditando);
 
     let produtoEdit = produtos.find(p => p.id === id);
     preecherFormulario(produtoEdit);
+}
+
+function contemProdutoEmEdicao(rowEditando) {
+    const linhas = document.querySelectorAll('#produtos-tbody tr');
+    
+    for (const linha of linhas) {
+        if (linha !== rowEditando && linha.classList.contains('edit-row')) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 function preecherFormulario(produto) {
