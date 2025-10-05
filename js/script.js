@@ -12,7 +12,9 @@ const tbody = document.getElementById('produtos-tbody');
 const btnAtualizar = document.getElementById('btn-atualizar');
 const modalExclusao = document.getElementById('modal-delete');
 const btnFecharModalExclusao = document.getElementById('btn-cancel-delete');
-
+const btnConfirmarExclusao = document.getElementById('btn-confirm-delete');
+const modalAviso = document.getElementById('modal-aviso');
+const btnAvisoFechar = document.getElementById('btn-aviso-fechar');
 
 
 let produtos = [];
@@ -42,6 +44,17 @@ btnFecharModalExclusao.addEventListener('click', () => {
    fecharModalExclusao();
 })
 
+btnConfirmarExclusao.addEventListener('click', async () => {
+    let rowEditando = tbody.querySelector(".edit-row");
+    if (rowEditando) {
+        const id = rowEditando.cells[0].innerText;
+        debugger
+       let resposta =  await fetchProdutos(urlDelete + id, 'DELETE');
+       fecharModalExclusao();
+       abrirModalAviso("Produto excluído com sucesso!");
+    }
+})
+
 function fecharModalExclusao() {
     modalExclusao.classList.add("d-none")
     let rowEditando = tbody.querySelector(".edit-row");
@@ -53,6 +66,16 @@ function abrirModalExclusao(id, event) {
     let rowEditando = event.closest("tr");
     marcarRowEditando(rowEditando);
 }
+
+function abrirModalAviso(mensagem) {
+    const campoMsg = document.getElementById('modal-mensagem');
+    campoMsg.innerText = mensagem;
+    modalAviso.classList.remove("d-none");
+}
+
+btnAvisoFechar.addEventListener('click', () => {
+    modalAviso.classList.add("d-none");
+});
 
 function marcarRowEditando(row){ row && row.classList.add("edit-row");}
 function desmarcarRowEditando(row){ row && row.classList.remove("edit-row");}
@@ -84,18 +107,22 @@ function getFormData() {
     return data;
 }
 
-async function fetchProdutos(url, data = undefined) {
+async function fetchProdutos(url, method = 'GET', data = null) {
+    const config = {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+    };
 
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Erro ao buscar produtos');
-        const produtos = await response.json();
-        return produtos;
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao buscar produtos');
-        return [];
+    if (data) config.body = JSON.stringify(data);
+
+    const response = await fetch(url, config);
+    
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        throw new Error(error.mensagem || `Erro ${response.status}`);
     }
+
+    return response.status === 204 ? null : response.json();
 }
 
 function adicionarProdutoTabela(produtos) {
