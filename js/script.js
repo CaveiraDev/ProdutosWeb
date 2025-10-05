@@ -6,7 +6,8 @@
  const urlDelete = API_URL + "/Remova/"
 
 const btnCadastrar = document.getElementById('btn-cadastrar');
-const btnCancel = document.getElementById('btn-cancelar');
+const btnEditar = document.getElementById('btn-Editar');
+const btnCancelar = document.getElementById('btn-Cancelar');
 const form = document.getElementById('produto-form');
 const tbody = document.getElementById('produtos-tbody');
 const btnAtualizar = document.getElementById('btn-atualizar');
@@ -49,7 +50,7 @@ btnConfirmarExclusao.addEventListener('click', async () => {
     if (rowEditando) {
         const id = rowEditando.cells[0].innerText;
         debugger
-       let resposta =  await fetchProdutos(urlDelete + id, 'DELETE');
+       await fetchProdutos(urlDelete + id, 'DELETE');
        fecharModalExclusao();
        abrirModalAviso("Produto excluído com sucesso!");
     }
@@ -83,8 +84,57 @@ function desmarcarRowEditando(row){ row && row.classList.remove("edit-row");}
 function editarProduto(id, event) {
     let rowEditando = event.closest("tr");
     marcarRowEditando(rowEditando);
+
+    let produtoEdit = produtos.find(p => p.id === id);
+    preecherFormulario(produtoEdit);
 }
+
+function preecherFormulario(produto) {
+    if (!produto) return;
+    alternarModoFormulario('editar', produto);
+    focarFormulario();
+}
+
  
+function focarFormulario() {
+    const section = document.querySelector(".form-section");
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+    section.classList.add("destaque");
+
+    setTimeout(() => {
+        section.classList.remove("destaque");
+    }, 2000);
+}
+
+function alternarModoFormulario(modo, produto = null) {
+    const ehCadastrar = modo === 'cadastrar';
+    
+    if (ehCadastrar) {
+        form.reset();
+    } else {
+        nome.value = produto.nome;
+        categoria.value = produto.categoria;
+        preco.value = produto.preco;
+        quantidade.value = produto.quantidade;
+        produtoEmEdicao = produto.id;
+    }
+    
+    document.getElementById("form-title").innerText = 
+        ehCadastrar ? "Cadastrar Novo Produto" : "Editar Produto";
+    
+    btnCadastrar.style.display = ehCadastrar ? "inline-block" : "none";
+    btnEditar.style.display = ehCadastrar ? "none" : "inline-block";
+    btnCancelar.style.display = ehCadastrar ? "none" : "inline-block";
+
+    
+    if (!ehCadastrar) nome.focus();
+}
+
+btnCancelar.addEventListener('click', () => {
+    alternarModoFormulario('cadastrar');
+    let rowEditando = tbody.querySelector(".edit-row");
+    desmarcarRowEditando(rowEditando)
+});
 
 function validarFormulario() {
 

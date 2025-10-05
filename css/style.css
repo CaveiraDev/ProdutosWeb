@@ -553,6 +553,15 @@ td strong {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
+
+/* Estilo de destaque temporário */
+.destaque {
+    outline: 3px solid #f6c900;
+    border-radius: 8px;
+    transition: outline 0.5s ease-in-out;
+}
+
+
 @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
