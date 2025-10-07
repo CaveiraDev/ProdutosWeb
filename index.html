@@ -14,7 +14,6 @@
         </header>
 
         <main>
-            <!-- Formulário de Produto -->
             <section class="form-section">
                 <h2 id="form-title">Cadastrar Novo Produto</h2>
                 <form id="produto-form">
@@ -22,23 +21,23 @@
                     
                     <div class="form-group">
                         <label for="nome">Nome do Produto *</label>
-                        <input type="text" id="nome" placeholder="Ex: Notebook Dell" required>
+                        <input type="text" id="nome" maxlength="100" placeholder="Ex: Notebook Dell" required>
                     </div>
 
                     <div class="form-group">
                         <label for="categoria">Categoria *</label>
-                        <input type="text" id="categoria" placeholder="Ex: Informática" required>
+                        <input type="text" id="categoria" maxlength="100" placeholder="Ex: Informática" required>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="preco">Preço (R$) *</label>
-                            <input type="number" id="preco" step="0.01" min="0.01" placeholder="0.00" required>
+                            <input type="text" id="preco" step="0.01" min="0.01" placeholder="0.00" required>
                         </div>
 
                         <div class="form-group">
                             <label for="quantidade">Quantidade *</label>
-                            <input type="number" id="quantidade" min="0" maxlength="9" placeholder="0" required>
+                            <input type="text" id="quantidade" min="0" maxlength="9" placeholder="0" required>
                         </div>
                     </div>
 
@@ -110,7 +109,7 @@
 
     <div id="modal-aviso" class="modal d-none">
         <div class="modal-content">
-            <h3>✅ Sucesso!</h3>
+            <h3 id="modal-titulo">✅ Sucesso!</h3>
             <p id="modal-mensagem">Operação realizada com Sucesso!</p>
             <div class="modal-actions">
                 <button class="btn btn-secondary" id="btn-aviso-fechar">Fechar</button>

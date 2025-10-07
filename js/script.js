@@ -20,6 +20,8 @@ const btnAvisoFechar = document.getElementById('btn-aviso-fechar');
 
 let produtos = [];
 
+[quantidade, preco].forEach(m => m.addEventListener('input', formatarInput(m)));
+
 document.addEventListener('DOMContentLoaded', async () => {
     fecharModalExclusao()
     produtos = await fetchProdutos(urlGetAll);
@@ -29,17 +31,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 btnCadastrar.addEventListener('click', async (e) => {
     
     const produto = getFormData();
-    if (!produto) return;
+    if (!ehValidoFormulario()) return;
 
     produtos.push(produto);
     adicionarProdutoTabela(produtos);
     form.reset();
 })
 
+btnEditar.addEventListener('click', async (e) => {
+    let rowEditando = tbody.querySelector(".edit-row");
+    let id = rowEditando.cells[0].innerText;
+    const produto = getFormData();
+
+    if (!ehValidoFormulario()) return;
+    
+      await fetchProdutos(urlPut + id , 'PUT', produto);
+    
+
+    alternarModoFormulario('cadastrar');
+    desmarcarRowEditando(tbody.querySelector(".edit-row"))
+    
+    await atualizarTabela();
+    abrirModalAviso("✅ Sucesso!", "Produto atualizado com sucesso!");
+})
+
+
 btnAtualizar.addEventListener('click', async () => {
+  await atualizarTabela();
+})
+
+ async function atualizarTabela() {
     produtos = await fetchProdutos(urlGetAll);
     adicionarProdutoTabela(produtos);
-})
+}
 
 btnFecharModalExclusao.addEventListener('click', () => {
    fecharModalExclusao();
@@ -49,10 +73,10 @@ btnConfirmarExclusao.addEventListener('click', async () => {
     let rowEditando = tbody.querySelector(".edit-row");
     if (rowEditando) {
         const id = rowEditando.cells[0].innerText;
-        debugger
        await fetchProdutos(urlDelete + id, 'DELETE');
        fecharModalExclusao();
-       abrirModalAviso("Produto excluído com sucesso!");
+       abrirModalAviso("✅ Sucesso!", "Produto excluído com sucesso!");
+       await atualizarTabela();
     }
 })
 
@@ -68,7 +92,9 @@ function abrirModalExclusao(id, event) {
     marcarRowEditando(rowEditando);
 }
 
-function abrirModalAviso(mensagem) {
+function abrirModalAviso(titulo, mensagem) {
+    const campoTitulo = document.getElementById('modal-titulo');
+    campoTitulo.innerText = titulo;
     const campoMsg = document.getElementById('modal-mensagem');
     campoMsg.innerText = mensagem;
     modalAviso.classList.remove("d-none");
@@ -85,7 +111,7 @@ function desmarcarRowEditando(row){ row && row.classList.remove("edit-row");}
 function editarProduto(id, event) {
     let rowEditando = event.closest("tr");
     if (contemProdutoEmEdicao(rowEditando)) {
-        alert("Finalize a edição atual antes de editar outro produto.");
+        abrirModalAviso("⚠️ Atenção!", "Finalize a edição atual antes de editar outro produto.");
         return;
     }
     
@@ -154,9 +180,36 @@ btnCancelar.addEventListener('click', () => {
     desmarcarRowEditando(rowEditando)
 });
 
-function validarFormulario() {
+function ehValidoFormulario() {
+    let mensagem = "";
+    if (!nome.value.trim()) {
+        mensagem = "O campo 'Nome' é obrigatório."
+        nome.focus();
+    }
 
+    if (!categoria.value.trim()) {
+        mensagem += "\n O campo 'Categoria' é obrigatório.";
+        categoria.focus();
+    }
+
+    if (isNaN(preco.value) || preco.value <= 0) {
+        mensagem += "\n O campo 'Preço' deve ser maior que 0.";
+        preco.focus();
+    }
+
+    if (isNaN(quantidade.value) || quantidade.value <= 0) {
+        mensagem += "\n O campo 'Quantidade' deve ser maior que 0.";
+        quantidade.focus();
+    }
+
+    if(mensagem !== ""){
+        abrirModalAviso("⚠️ Formulário Invalido!",mensagem);
+        return false;
+    }
+
+   return true;
 }
+
 function getFormData() {
     const nome = document.getElementById('nome').value.trim();
     const categoria = document.getElementById('categoria').value.trim();
@@ -187,7 +240,8 @@ async function fetchProdutos(url, method = 'GET', data = null) {
     
     if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.mensagem || `Erro ${response.status}`);
+        
+        abrirModalAviso("❌Error !!", error.mensagem || `Erro ${response.status}`);
     }
 
     return response.status === 204 ? null : response.json();
@@ -228,4 +282,31 @@ function adicionarProdutoTabela(produtos) {
 function formatarData(data) {
     const d = new Date(data);
     return d.toLocaleDateString('pt-BR');
+}
+
+function formatarInput(event) {
+    const { id, value } = event;
+    let valor = value;
+    
+    if (id === 'preco') {
+        valor = valor.replace(/[^\d.,]/g, '').replace(',', '.');
+        
+        const partes = valor.split('.');
+        if (partes.length > 2) valor = partes[0] + '.' + partes.slice(1).join('');
+        
+        if (partes[0].length > 9) {
+            partes[0] = partes[0].slice(0, 9);
+        }
+        
+        if (partes[1]?.length > 2) {
+            partes[1] = partes[1].slice(0, 2);
+        }
+        
+        valor = partes[1] ? partes[0] + '.' + partes[1] : partes[0];
+    } 
+    else if (id === 'quantidade') {
+        valor = valor.replace(/\D/g, '').slice(0, 9);
+    }
+    
+    event.value = valor;
 }
