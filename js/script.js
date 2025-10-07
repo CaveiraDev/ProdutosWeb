@@ -279,6 +279,19 @@ function adicionarProdutoTabela(produtos) {
 
 }   
 
+inputTabela.addEventListener('input', (ev) => {
+    let busca = ev.target.value.trim().toLowerCase();
+    
+    let produtosFiltrados = produtos.filter(p => 
+        p.id == busca ||
+        p.nome.toLowerCase().includes(busca) ||
+        p.categoria.toLowerCase().includes(busca) ||
+        p.preco.toString().includes(busca)
+    );
+    
+    adicionarProdutoTabela(produtosFiltrados);
+});
+
 function formatarData(data) {
     const d = new Date(data);
     return d.toLocaleDateString('pt-BR');
