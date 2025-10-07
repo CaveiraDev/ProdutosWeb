@@ -333,7 +333,6 @@ main {
     transform: translateY(-2px);
 }
 
-/* Botão Danger */
 .btn-danger {
     background-color: var(--danger-color);
     color: white;
@@ -347,7 +346,6 @@ main {
     transform: translateY(-2px);
 }
 
-/* Botão Refresh */
 .btn-refresh {
     background-color: var(--card-bg);
     color: var(--primary-color);
@@ -368,10 +366,6 @@ main {
     gap: var(--spacing-sm);
     margin-top: var(--spacing-lg);
 }
-
-/* ========================================
-   MENSAGENS
-   ======================================== */
 
 .error-message {
     padding: var(--spacing-md);
@@ -395,10 +389,6 @@ main {
         transform: translateY(0);
     }
 }
-
-/* ========================================
-   TABELA - Tema Escuro
-   ======================================== */
 
 .table-header {
     display: flex;
@@ -500,10 +490,6 @@ td strong {
     flex-wrap: wrap;
 }
 
-/* ========================================
-   LOADING & EMPTY
-   ======================================== */
-
 .loading {
     text-align: center;
     padding: 60px var(--spacing-lg);
@@ -512,8 +498,6 @@ td strong {
     animation: pulse 1.5s ease-in-out infinite;
 }
 
-
-/* Estilo de destaque temporário */
 .destaque {
     outline: 3px solid #f6c900;
     border-radius: 8px;
@@ -550,10 +534,6 @@ td strong {
     margin-bottom: var(--spacing-md);
     opacity: 0.5;
 }
-
-/* ========================================
-   MODAL
-   ======================================== */
 
 .modal {
     position: fixed;
@@ -632,9 +612,6 @@ td strong {
     justify-content: flex-end;
 }
 
-/* ========================================
-   SCROLLBAR CUSTOMIZADA - Laranja
-   ======================================== */
 
 ::-webkit-scrollbar {
     width: 10px;
@@ -654,10 +631,6 @@ td strong {
 ::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, var(--orange-middle), var(--orange-end));
 }
-
-/* ========================================
-   RESPONSIVIDADE
-   ======================================== */
 
 @media (max-width: 1024px) {
     header h1 {
