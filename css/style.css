@@ -1,6 +1,3 @@
-/* ========================================
-   RESET E VARIÁVEIS
-   ======================================== */
 
 * {
     margin: 0;
@@ -9,23 +6,19 @@
 }
 
 :root {
-    /* Cores Principais - Paleta Invent */
     --primary-color: #f59e0b;
     --primary-hover: #d97706;
     --primary-light: #fbbf24;
     --primary-dark: #b45309;
-    
-    /* Cores Secundárias */
+
     --secondary-color: #1a1a1a;
     --secondary-hover: #2d2d2d;
     --secondary-light: #404040;
     
-    /* Laranja Gradiente */
     --orange-start: #ff6b35;
     --orange-middle: #f59e0b;
     --orange-end: #fbbf24;
     
-    /* Cores de Status */
     --success-color: #10b981;
     --success-hover: #059669;
     --success-light: #d1fae5;
@@ -39,47 +32,37 @@
     --warning-color: #f59e0b;
     --warning-hover: #d97706;
     
-    /* Cores de Fundo */
     --background: #0a0a0a;
     --background-light: #1a1a1a;
     --card-bg: #1f1f1f;
     --card-hover: #2a2a2a;
     
-    /* Cores de Borda e Texto */
     --border-color: #333333;
     --border-hover: #4a4a4a;
     --text-primary: #ffffff;
     --text-secondary: #a3a3a3;
     --text-light: #737373;
     
-    /* Sombras com tons alaranjados */
     --shadow-sm: 0 1px 2px rgba(245, 158, 11, 0.1);
     --shadow-md: 0 4px 6px rgba(245, 158, 11, 0.15);
     --shadow-lg: 0 10px 15px rgba(245, 158, 11, 0.2);
     --shadow-xl: 0 20px 25px rgba(245, 158, 11, 0.25);
     
-    /* Espaçamentos */
     --spacing-xs: 8px;
     --spacing-sm: 12px;
     --spacing-md: 16px;
     --spacing-lg: 24px;
     --spacing-xl: 32px;
     
-    /* Border Radius */
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
     --radius-xl: 18px;
     
-    /* Transições */
     --transition-fast: 0.15s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
 }
-
-/* ========================================
-   ESTILOS GLOBAIS
-   ======================================== */
 
 body {
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Oxygen', 
@@ -90,10 +73,6 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
 }
-
-/* ========================================
-   CONTAINER PRINCIPAL
-   ======================================== */
 
 .container {
     max-width: 1400px;
@@ -112,10 +91,6 @@ body {
         transform: translateY(0);
     }
 }
-
-/* ========================================
-   HEADER - Estilo Invent
-   ======================================== */
 
 header {
     text-align: center;
@@ -175,10 +150,6 @@ header p {
     font-weight: 300;
 }
 
-/* ========================================
-   SECTIONS
-   ======================================== */
-
 main {
     display: grid;
     gap: var(--spacing-xl);
@@ -221,10 +192,6 @@ main {
     content: '📋';
     font-size: 1.5rem;
 }
-
-/* ========================================
-   FORMULÁRIO
-   ======================================== */
 
 .form-group {
     margin-bottom: var(--spacing-lg);
@@ -316,7 +283,6 @@ main {
     cursor: not-allowed;
 }
 
-/* Botão Primário - Laranja Invent */
 .btn-primary {
     background: linear-gradient(135deg, var(--orange-start), var(--orange-middle));
     color: white;
@@ -328,7 +294,6 @@ main {
     transform: translateY(-3px);
 }
 
-/* Botão Secundário - Escuro */
 .btn-secondary {
     background-color: var(--secondary-color);
     color: white;
@@ -342,7 +307,6 @@ main {
     transform: translateY(-3px);
 }
 
-/* Botão Sucesso */
 .btn-success {
     background-color: var(--success-color);
     color: white;
@@ -356,7 +320,6 @@ main {
     transform: translateY(-2px);
 }
 
-/* Botão Warning - Laranja */
 .btn-warning {
     background: linear-gradient(135deg, var(--warning-color), var(--primary-light));
     color: white;
