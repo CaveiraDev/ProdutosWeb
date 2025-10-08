@@ -39,10 +39,9 @@ btnCadastrar.addEventListener('click', async (e) => {
 
     await fetchProdutos(urlPost, 'POST', produto);
 
-    setTimeout(
-        abrirModalAviso("✅ Sucesso!", "Produto cadastrado com sucesso!")
-    , 100);
-    
+    setTimeout(() => {
+       abrirModalAviso("✅ Sucesso!", "Produto cadastrado com sucesso!")
+    }, 2000);
 
     await atualizarTabela();
     form.reset();
@@ -303,6 +302,7 @@ async function fetchProdutos(url, method = 'GET', data = null) {
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
             abrirModalAviso("❌ Erro!", error.mensagem || `Erro ${response.status}`);
+            console.log('Erro na requisição:', response.status, error);
             return null;
         }
 
