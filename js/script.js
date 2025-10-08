@@ -28,14 +28,10 @@ window.addEventListener('load', async () => {
 });
 
 btnCadastrar.addEventListener('click', async (e) => {
-    
+    e.preventDefault();
     const produto = getFormData();
 
-    if (!ehValidoFormulario())
-    {
-        e.preventDefault();
-        return;
-    } 
+    if (!ehValidoFormulario()){ return;} 
 
     await fetchProdutos(urlPost, 'POST', produto);
 
@@ -48,19 +44,15 @@ btnCadastrar.addEventListener('click', async (e) => {
 })
 
 btnEditar.addEventListener('click', async (e) => {
+     e.preventDefault();
     let rowEditando = tbody.querySelector(".edit-row");
     let id = rowEditando.cells[0].innerText;
     const produto = getFormData();
 
-    if (!ehValidoFormulario(rowEditando))
-    {
-        e.preventDefault();
-        return;
-    } 
+    if (!ehValidoFormulario(rowEditando)){ return; } 
     
-      await fetchProdutos(urlPut + id , 'PUT', produto);
+    await fetchProdutos(urlPut + id , 'PUT', produto);
     
-
     alternarModoFormulario('cadastrar');
     desmarcarRowEditando(tbody.querySelector(".edit-row"))
     
