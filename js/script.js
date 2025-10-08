@@ -214,6 +214,20 @@ function ehValidoFormulario(rowEditando = null) {
         preco.focus();
     }
 
+    if (preco.value) {
+        let valorPreco = preco.value.replace(',', '.');
+        let partes = valorPreco.split('.');
+        let digitosInteiros = partes[0].length;
+        
+        if (!/^\d+(\.\d{1,2})?$/.test(valorPreco)) {
+            mensagem += "\nO campo 'Preço' deve ter no máximo duas casas decimais.";
+            preco.focus();
+        } else if (digitosInteiros > 9) {
+            mensagem += "\nO campo 'Preço' não pode ter mais de 9 dígitos.";
+            preco.focus();
+        }
+    }
+
     if (isNaN(quantidade.value) || quantidade.value <= 0) {
         mensagem += "\n O campo 'Quantidade' deve ser maior que 0.";
         quantidade.focus();
