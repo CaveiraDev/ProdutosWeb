@@ -22,8 +22,7 @@ let produtos = [];
 
 [quantidade, preco].forEach(m => m.addEventListener('input', formatarInput(m)));
 
-document.addEventListener('DOMContentLoaded', async () => {
-    fecharModalExclusao()
+window.addEventListener('load', async () => {
     produtos = await fetchProdutos(urlGetAll);
     adicionarProdutoTabela(produtos);
 });
@@ -31,10 +30,21 @@ document.addEventListener('DOMContentLoaded', async () => {
 btnCadastrar.addEventListener('click', async (e) => {
     
     const produto = getFormData();
-    if (!ehValidoFormulario()) return;
 
-    produtos.push(produto);
-    adicionarProdutoTabela(produtos);
+    if (!ehValidoFormulario())
+    {
+        e.preventDefault();
+        return;
+    } 
+
+    await fetchProdutos(urlPost, 'POST', produto);
+
+    setTimeout(
+        abrirModalAviso("✅ Sucesso!", "Produto cadastrado com sucesso!")
+    , 100);
+    
+
+    await atualizarTabela();
     form.reset();
 })
 
@@ -43,7 +53,11 @@ btnEditar.addEventListener('click', async (e) => {
     let id = rowEditando.cells[0].innerText;
     const produto = getFormData();
 
-    if (!ehValidoFormulario()) return;
+    if (!ehValidoFormulario(rowEditando))
+    {
+        e.preventDefault();
+        return;
+    } 
     
       await fetchProdutos(urlPut + id , 'PUT', produto);
     
@@ -108,7 +122,7 @@ function marcarRowEditando(row){ row && row.classList.add("edit-row");}
 
 function desmarcarRowEditando(row){ row && row.classList.remove("edit-row");}
 
-function editarProduto(id, event) {
+function editarRowProduto(id, event) {
     let rowEditando = event.closest("tr");
     if (contemProdutoEmEdicao(rowEditando)) {
         abrirModalAviso("⚠️ Atenção!", "Finalize a edição atual antes de editar outro produto.");
@@ -117,8 +131,11 @@ function editarProduto(id, event) {
     
     marcarRowEditando(rowEditando);
 
-    let produtoEdit = produtos.find(p => p.id === id);
-    preecherFormulario(produtoEdit);
+    fetchProdutos(urlGetById + id, 'GET').then(data => {
+        if (data) {
+            preecherFormulario(data);
+        }
+    })
 }
 
 function contemProdutoEmEdicao(rowEditando) {
@@ -180,7 +197,7 @@ btnCancelar.addEventListener('click', () => {
     desmarcarRowEditando(rowEditando)
 });
 
-function ehValidoFormulario() {
+function ehValidoFormulario(rowEditando = null) {
     let mensagem = "";
     if (!nome.value.trim()) {
         mensagem = "O campo 'Nome' é obrigatório."
@@ -202,6 +219,15 @@ function ehValidoFormulario() {
         quantidade.focus();
     }
 
+    let produto = {
+        nome: nome.value.trim(),
+        categoria: categoria.value.trim()
+    };
+
+    if (jaContemProduto(produto, rowEditando)) {
+        mensagem += "\nJá existe um produto com esse Nome e Categoria.";
+    }
+
     if(mensagem !== ""){
         abrirModalAviso("⚠️ Formulário Invalido!",mensagem);
         return false;
@@ -209,6 +235,27 @@ function ehValidoFormulario() {
 
    return true;
 }
+
+function jaContemProduto(produto, rowEditando = null) {
+    const linhas = document.querySelectorAll('#produtos-tbody tr');
+    
+    for (const linha of linhas) {
+        if (linha === rowEditando) continue;
+        
+        const nomeLinha = linha.cells[1].textContent.trim().toLowerCase();
+        const categoriaLinha = linha.cells[2].textContent.trim().toLowerCase();
+        
+        const nomeIgual = nomeLinha === produto.nome.toLowerCase();
+        const categoriaIgual = categoriaLinha === produto.categoria.toLowerCase();
+        
+        if (nomeIgual && categoriaIgual) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
 
 function getFormData() {
     const nome = document.getElementById('nome').value.trim();
@@ -229,22 +276,28 @@ function getFormData() {
 }
 
 async function fetchProdutos(url, method = 'GET', data = null) {
-    const config = {
-        method,
-        headers: { 'Content-Type': 'application/json' }
-    };
+    try {
+        const config = {
+            method,
+            headers: { 'Content-Type': 'application/json' }
+        };
 
-    if (data) config.body = JSON.stringify(data);
+        if (data) config.body = JSON.stringify(data);
 
-    const response = await fetch(url, config);
-    
-    if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
+        const response = await fetch(url, config);
         
-        abrirModalAviso("❌Error !!", error.mensagem || `Erro ${response.status}`);
-    }
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}));
+            abrirModalAviso("❌ Erro!", error.mensagem || `Erro ${response.status}`);
+            return null;
+        }
 
-    return response.status === 204 ? null : response.json();
+        return response.status === 204 ? null : response.json();
+        
+    } catch (error) {
+        abrirModalAviso("❌ Erro!", "Erro de conexão com a API");
+        return null;
+    }
 }
 
 function adicionarProdutoTabela(produtos) {
@@ -263,7 +316,7 @@ function adicionarProdutoTabela(produtos) {
             <td>${formatarData(produto.data)}</td>
             <td>
                 <div class="actions">
-                    <button class="btn btn-warning" onclick="editarProduto(${produto.id},this)" title="Editar produto">
+                    <button class="btn btn-warning" onclick="editarRowProduto(${produto.id},this)" title="Editar produto">
                         ✏️ Editar
                     </button>
                     <button class="btn btn-danger" onclick="abrirModalExclusao(${produto.id},this)" title="Excluir produto">
@@ -301,23 +354,7 @@ function formatarInput(event) {
     const { id, value } = event;
     let valor = value;
     
-    if (id === 'preco') {
-        valor = valor.replace(/[^\d.,]/g, '').replace(',', '.');
-        
-        const partes = valor.split('.');
-        if (partes.length > 2) valor = partes[0] + '.' + partes.slice(1).join('');
-        
-        if (partes[0].length > 9) {
-            partes[0] = partes[0].slice(0, 9);
-        }
-        
-        if (partes[1]?.length > 2) {
-            partes[1] = partes[1].slice(0, 2);
-        }
-        
-        valor = partes[1] ? partes[0] + '.' + partes[1] : partes[0];
-    } 
-    else if (id === 'quantidade') {
+    if (id === 'quantidade') {
         valor = valor.replace(/\D/g, '').slice(0, 9);
     }
     
